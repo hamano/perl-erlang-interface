@@ -6,3 +6,6 @@ ppport.h
 README
 t/Erlang-Interface.t
 lib/Erlang/Interface.pm
+typemap
+fallback/const-c.inc
+fallback/const-xs.inc
