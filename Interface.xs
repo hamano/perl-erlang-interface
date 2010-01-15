@@ -9,13 +9,11 @@
 #include "ppport.h"
 #include "const-c.inc"
 
+typedef ETERM * PERL_ETERM;
+
 typedef struct in_addr hoge;
 MODULE = Erlang::Interface		PACKAGE = Erlang::Interface
 INCLUDE: const-xs.inc
-
-void hello()
-CODE:
-    printf("Hello, world!\n");
 
 #pragma erl_connect_init(number, cookie, creation)
 
@@ -56,20 +54,103 @@ int erl_close_connection(fd)
 	int fd
 
 int erl_receive(fd, bufp, bufsize)
-    int fd
-    char *bufp
-    int bufsize
+	int fd
+	SV *bufp
+	int bufsize
+PREINIT:
+	char buf[10240];
+	char *p;
+CODE:
+	if(bufsize > 10240){
+		p = malloc(bufsize);
+		RETVAL = erl_receive(fd, p, bufsize);
+        sv_setpvn(bufp, p, RETVAL);
+		free(p);
+	}else{
+		RETVAL = erl_receive(fd, buf, bufsize);
+        sv_setpvn(bufp, buf, RETVAL);
+	}
+OUTPUT:
+	RETVAL
+	bufp
 
 int erl_receive_msg(fd, bufp, bufsize, emsg)
+	int fd
+	SV *bufp
+	int bufsize
+	SV *emsg
+PREINIT:
+	char *p;
+    ErlMessage *msg;
+CODE:
+	Newx(msg, sizeof(ErlMessage), ErlMessage);
+	p = malloc(bufsize);
+	RETVAL = erl_receive_msg(fd, p, bufsize, msg);
+    sv_setpvn(bufp, p, RETVAL);
+	free(p);
+	sv_setiv(emsg, (IV)msg);
+OUTPUT:
+	RETVAL
+	bufp
+	emsg
+
+int erl_xreceive_msg(fd, bufpp, bufsizep, emsg)
+	int fd
+	SV *bufpp
+	SV *bufsizep
+	SV *emsg
+PREINIT:
+	unsigned char *p;
+    ErlMessage *msg;
+	int bufsize;
+CODE:
+	Newx(msg, sizeof(ErlMessage), ErlMessage);
+	bufsize = SvIV(bufsizep);
+	p = malloc(bufsize);
+	RETVAL = erl_xreceive_msg(fd, &p, &bufsize, msg);
+	free(p);
+	sv_setiv(bufsizep, bufsize);
+	sv_setiv(emsg, (IV)msg);
+OUTPUT:
+	RETVAL
+	bufsizep
+	emsg
+
+int erl_send(fd, to, msg)
     int fd
-    unsigned char *bufp
-    int bufsize
-    ErlMessage *emsg
+    ETERM *to
+    ETERM *msg
 
 int erl_reg_send(fd, to, msg)
     int fd
-    char* to
-    ETERM* msg
+    char *to
+    ETERM *msg
+
+void erl_msg_free(emsg)
+	SV *emsg
+PREINIT:
+    ErlMessage *msg;
+CODE:
+    msg=(ErlMessage*)SvIV(emsg);
+	erl_print_term(stdout, msg->msg);
+
+
+int erl_publish(port)
+	int port
+
+int erl_accept(listensock, conp)
+	int listensock
+	ErlConnect *conp
+
+const char *erl_thiscookie()
+
+const char *erl_thisnodename()                                             
+
+const char *erl_thishostname()
+
+const char *erl_thisalivename()
+
+short erl_thiscreation()
 
 int erl_length(list)
     ETERM* list
@@ -106,7 +187,7 @@ CODE:
 
 	for(i=0; i<size; i++){
 		SV** sv = av_fetch(array, i, 0);
-		earray[i] = (ETERM*)SvIV(*sv);
+		earray[i] = (ETERM*)SvRV(*sv);
 //		erl_print_term(stdout, SvIV(*tmp));
 	}
     RETVAL = erl_mk_list(earray, size);
@@ -175,3 +256,4 @@ ETERM* erl_tl(list)
 ETERM * erl_var_content(term, name)
 	ETERM *term
 	char *name
+

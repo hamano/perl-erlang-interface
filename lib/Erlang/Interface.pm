@@ -17,6 +17,7 @@ our @ISA = qw(Exporter);
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
 our %EXPORT_TAGS = ( 'all' => [ qw(
+    erl_msg_free
     ERL_ATOM
     ERL_BIG
     ERL_BINARY
@@ -41,7 +42,6 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
     ERL_VARIABLE
     MAXREGLEN
 
-	hello
 	erl_set_compat_rel
 	erl_connect_init
 	erl_connect_xinit
@@ -103,7 +103,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ( @{ $EXPORT_TAGS{'all'} } );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -143,18 +143,15 @@ __END__
 
 =head1 NAME
 
-Erlang::Interface - Perl extension for blah blah blah
+Erlang::Interface - Erlang Interface
 
 =head1 SYNOPSIS
 
   use Erlang::Interface;
-  blah blah blah
 
 =head1 DESCRIPTION
 
-Stub documentation for Erlang::Interface, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+This perl module provides Erlang Interface
 
 Blah blah blah.
 

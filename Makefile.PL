@@ -31,6 +31,9 @@ WriteMakefile(
       (ABSTRACT_FROM  => 'lib/Erlang/Interface.pm', # retrieve abstract from module
        AUTHOR         => 'Tsukasa Hamano <hamano@cpan.org>') : ()),
        LIBS              => ["-lpthread -L$otp_dir/lib -lerl_interface -lei"],
+       DEFINE            => '',
+       INC               => '-I. -I$otp_dir/include',
+       LICENSE           => 'perl',
 );
 
 if  (eval {require ExtUtils::Constant; 1}) {
