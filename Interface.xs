@@ -10,12 +10,15 @@
 #include "const-c.inc"
 
 typedef ETERM * PERL_ETERM;
-
 typedef struct in_addr hoge;
+
 MODULE = Erlang::Interface		PACKAGE = Erlang::Interface
 INCLUDE: const-xs.inc
+INCLUDE: Interface_macros.xs
 
 #pragma erl_connect_init(number, cookie, creation)
+
+
 
 void erl_init(x, y)
     void* x
@@ -256,4 +259,3 @@ ETERM* erl_tl(list)
 ETERM * erl_var_content(term, name)
 	ETERM *term
 	char *name
-

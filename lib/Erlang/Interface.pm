@@ -103,7 +103,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 our @EXPORT = ( @{ $EXPORT_TAGS{'all'} } );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -143,7 +143,7 @@ __END__
 
 =head1 NAME
 
-Erlang::Interface - Erlang Interface
+Erlang::Interface - Perl interface for erl_interface
 
 =head1 SYNOPSIS
 
@@ -151,7 +151,7 @@ Erlang::Interface - Erlang Interface
 
 =head1 DESCRIPTION
 
-This perl module provides Erlang Interface
+Erlang Interface is Perl interface for erl_interface
 
 Blah blah blah.
 
